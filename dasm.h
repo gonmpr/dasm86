@@ -16,14 +16,28 @@ typedef int64_t  s64;
 
 //registers
 typedef enum {
-    REG_A,
-    REG_B,
-    REG_C,
-    REG_D,
+
+    REG_AL,
+    REG_CL,
+    REG_DL,
+    REG_BL,
+
+    REG_AH,
+    REG_CH,
+    REG_DH,
+    REG_BH,
+
+    REG_AX,
+    REG_CX,
+    REG_DX,
+    REG_BX,
+
     REG_SP,
     REG_BP,
     REG_SI,
     REG_DI,
+
+    REG_INVALID,
 } reg_t;
 
 
@@ -37,6 +51,7 @@ typedef enum{
   OPERAND_ADDRESS,
   OPERAND_IMMEDIATE,
   OPERAND_REGISTER,
+  OPERAND_INVALID,
 }operand_kind_t;
 
 // for instruction decoding in opcode_t struct
@@ -70,12 +85,11 @@ typedef struct {
 // for the operands of the instruction
 typedef struct {
   operand_kind_t kind;
-  bool w;
 
   union {
       u16 immediate;
-      u16 address;
       reg_t reg;
+      memory_operand_t mem;
   };
 } operand_t;
 
@@ -91,15 +105,16 @@ typedef struct {
 } opcode_t;
 
 
+
 //the instruction representation, used for printing the text
 typedef struct {
 
   opcode_t opcode;
-  u8 size;
 
-  mod_t mod;
-  operand_t dst;
-  operand_t src;
+
+  operand_t operands[2]; //first is src, second is dst
+
+  u8 size;
 
 } instruction_t;
 
