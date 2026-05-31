@@ -185,78 +185,79 @@ instruction_t decode_mov(memory_t *mem, instruction_t ins){
 
     case 0b11000110: // INM -> REG/MEM
       {
-        bool w = (byte1 & 0b1) != 0;  
-        decode_modrm(mem, &ins, w);
-
-        set_src_dst(&ins, true);
-        
-
-        ins.operands[1].kind = OPERAND_IMMEDIATE;
-        
-        u8 inm_offset = 0;
-        if(ins.operands[0].kind == OPERAND_ADDRESS){
-          inm_offset += 2;
-        }
-
-        u16 inm_value = mem->data[mem->offset + 2];
-        ins.size += 1;
-
-        if(w){
-          u16 byte4 = mem->data[mem->offset + 3]; 
-          inm_value = (byte4<<8) | inm_value;
-          ins.size += 1 + inm_offset;
-          }
-            
-        ins.operands[1].inmmediate = inm_value;
+//        bool w = (byte1 & 0b1) != 0;  
+//        decode_modrm(mem, &ins, w);
+//
+//        set_src_dst(&ins, true);
+//        
+//
+//        ins.operands[1].kind = OPERAND_IMMEDIATE;
+//        
+//        u8 inm_offset = 0;
+//        if(ins.operands[0].kind == OPERAND_ADDRESS){
+//          inm_offset += 2;
+//        }
+//
+//        u16 inm_value = mem->data[mem->offset + 2];
+//        ins.size += 1;
+//
+//        if(w){
+//          u16 byte4 = mem->data[mem->offset + 3]; 
+//          inm_value = (byte4<<8) | inm_value;
+//          ins.size += 1 + inm_offset;
+//          }
+//            
+//        ins.operands[1].inmmediate = inm_value;
         break;
       }
 
     case 0b10110000: // INM -> REG
       {
-      u8 reg_bits = byte1 & 0b111;
-      bool w = (byte1 & 0b1) != 0;  
-
-      ins.operands[0].kind = OPERAND_REGISTER;
-      ins.operands[0].reg = get_register(reg_bits, w);
-
-      ins.operands[1].kind = OPERAND_IMMEDIATE;
-        
-      u16 inm_value = mem->data[mem->offset + 1];
-      ins.size += 1;
-
-      if(w){
-        u16 byte3 = mem->data[mem->offset + 2]; 
-        inm_value = (byte3<<8) | inm_value;
-        ins.size += 1;
-          }
-            
-        ins.operands[1].inmmediate = inm_value;
+//      u8 reg_bits = byte1 & 0b111;
+//      bool w = (byte1 & 0b1) != 0;  
+//
+//      ins.operands[0].kind = OPERAND_REGISTER;
+//      ins.operands[0].reg = get_register(reg_bits, w);
+//
+//      ins.operands[1].kind = OPERAND_IMMEDIATE;
+//        
+//      u16 inm_value = mem->data[mem->offset + 1];
+//      ins.size += 1;
+//
+//      if(w){
+//        u16 byte3 = mem->data[mem->offset + 2]; 
+//        inm_value = (byte3<<8) | inm_value;
+//        ins.size += 1;
+//          }
+//            
+//        ins.operands[1].inmmediate = inm_value;
       break;
       }
-      return ins;
   }
+      return ins;
+}
   
 
-
-
- // TODO 
-}
-
-instruction_t decode_add(memory_t *mem){
-
-}
-
-instruction_t decode_sub(memory_t *mem){
-
-}
-
-instruction_t decode_cmp(memory_t *mem){
-
-}
-
-instruction_t decode_jnz(memory_t *mem){
-
-}
+//
+//
+// // TODO 
+//}
+//
+//instruction_t decode_add(memory_t *mem){
+//
+//}
+//
+//instruction_t decode_sub(memory_t *mem){
+//
+//}
+//
+//instruction_t decode_cmp(memory_t *mem){
+//
+//}
+//
+//instruction_t decode_jnz(memory_t *mem){
+//
+//}
 
 
 
@@ -284,7 +285,7 @@ instruction_t decode_instruction(memory_t *mem){
         }
         case OP_MOV:
         {
-          decode_mov(mem, ins);
+          ins = decode_mov(mem, ins);
           break;
         }
 
