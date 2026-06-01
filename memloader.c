@@ -20,7 +20,7 @@ memory_t load_to_memory(FILE *fp, size_t file_size) {
     return loaded_file; //          couldn't open the file
   }
 
-  char *buffer = malloc(file_size);
+  unsigned char *buffer = malloc(file_size);
   if (!buffer) {
     return loaded_file; //          couldn't locate memory
   }

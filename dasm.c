@@ -98,6 +98,7 @@ opcode_t get_opcode(unsigned char byte){
 
 
 //decodes the mod reg rm structure and the displacement
+// setups the operands
 void decode_modrm(memory_t *mem, instruction_t *ins, bool wide){
 
   u8 byte2 = mem->data[mem->offset + 1];
@@ -183,54 +184,55 @@ instruction_t decode_mov(memory_t *mem, instruction_t ins){
         break;
       }
 
-    case 0b11000110: // INM -> REG/MEM
+    case 0b11000110: // INM -> REG/MEM MOV [], val
+      
       {
-//        bool w = (byte1 & 0b1) != 0;  
-//        decode_modrm(mem, &ins, w);
-//
-//        set_src_dst(&ins, true);
-//        
-//
-//        ins.operands[1].kind = OPERAND_IMMEDIATE;
-//        
-//        u8 inm_offset = 0;
-//        if(ins.operands[0].kind == OPERAND_ADDRESS){
-//          inm_offset += 2;
-//        }
-//
-//        u16 inm_value = mem->data[mem->offset + 2];
-//        ins.size += 1;
-//
-//        if(w){
-//          u16 byte4 = mem->data[mem->offset + 3]; 
-//          inm_value = (byte4<<8) | inm_value;
-//          ins.size += 1 + inm_offset;
-//          }
-//            
-//        ins.operands[1].inmmediate = inm_value;
+
+        ins.opcode = get_opcode(byte1);
+        bool w = (byte1 & 0b1) != 0;  
+        decode_modrm(mem, &ins, w);
+
+        u8 imm_offset = ins.size;
+
+        u16 imm_value = mem->data[mem->offset + imm_offset];
+        ins.size += 1;
+
+        if(w){
+            u16 hi = mem->data[mem->offset + imm_offset + 1];
+            imm_value |= (hi << 8);
+            ins.size += 1;
+        }
+            
+        operand_t rm = ins.operands[1];
+
+        ins.operands[0] = rm;
+
+        ins.operands[1].kind = OPERAND_IMMEDIATE;
+        ins.operands[1].immediate = imm_value;
         break;
       }
 
     case 0b10110000: // INM -> REG
       {
-//      u8 reg_bits = byte1 & 0b111;
-//      bool w = (byte1 & 0b1) != 0;  
-//
-//      ins.operands[0].kind = OPERAND_REGISTER;
-//      ins.operands[0].reg = get_register(reg_bits, w);
-//
-//      ins.operands[1].kind = OPERAND_IMMEDIATE;
-//        
-//      u16 inm_value = mem->data[mem->offset + 1];
-//      ins.size += 1;
-//
-//      if(w){
-//        u16 byte3 = mem->data[mem->offset + 2]; 
-//        inm_value = (byte3<<8) | inm_value;
-//        ins.size += 1;
-//          }
-//            
-//        ins.operands[1].inmmediate = inm_value;
+      ins.opcode = get_opcode(byte1);
+      u8 reg_bits = byte1 & 0b111;
+      bool w = ((byte1>>3) & 0b1) & 1;  
+
+      ins.operands[0].kind = OPERAND_REGISTER;
+      ins.operands[0].reg = get_register(reg_bits, w);
+
+      ins.operands[1].kind = OPERAND_IMMEDIATE;
+        
+      u16 inm_value = mem->data[mem->offset + 1];
+      ins.size += 2;
+
+      if(w){
+        u16 byte3 = mem->data[mem->offset + 2]; 
+        inm_value |= (byte3<<8);
+        ins.size = 3;
+          }
+            
+        ins.operands[1].immediate = inm_value;
       break;
       }
   }

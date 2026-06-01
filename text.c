@@ -73,16 +73,27 @@ void print_operand(operand_t op)
     switch(op.kind)
     {
         case OPERAND_REGISTER:
+          {
             print_register(op.reg);
             break;
+          }
 
         case OPERAND_IMMEDIATE:
+          {
             printf("%u", op.immediate);
             break;
+          }
 
         case OPERAND_ADDRESS:
+          {
             print_memory(op.mem);
             break;
+          }
+
+        default: 
+          {
+            printf("not defined\n");
+          }
     }
 }
 
