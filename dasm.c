@@ -188,7 +188,6 @@ instruction_t decode_mov(memory_t *mem, instruction_t ins){
       
       {
 
-        ins.opcode = get_opcode(byte1);
         bool w = (byte1 & 0b1) != 0;  
         decode_modrm(mem, &ins, w);
 
@@ -214,7 +213,7 @@ instruction_t decode_mov(memory_t *mem, instruction_t ins){
 
     case 0b10110000: // INM -> REG
       {
-      ins.opcode = get_opcode(byte1);
+
       u8 reg_bits = byte1 & 0b111;
       bool w = ((byte1>>3) & 0b1) & 1;  
 
@@ -240,15 +239,48 @@ instruction_t decode_mov(memory_t *mem, instruction_t ins){
 }
   
 
-//
-//
+instruction_t decode_add(memory_t *mem, instruction_t ins){
+    u8 byte1 = mem->data[mem->offset];
+    switch(ins.opcode.pattern){
+        case 0b00000000:
+            {
+                bool w = (byte1 & 0b1) != 0;  
+                bool d = (byte1 & 0b10) != 0;
+
+                decode_modrm(mem, &ins, w);
+                set_src_dst(&ins, d);
+                break;
+            }
+        case 0b10000000:
+            {
+                break;
+            }
+        case 0b00000100:
+            {
+                bool w = byte1 & 1;
+                u16 inm_value = mem->data[mem->offset + 1];
+                ins.size = 2;
+                if(w){
+                    u8 hi_value = mem->data[mem->offset + 2];
+                    inm_value |= (hi_value<<8);
+                    ins.size = 3;
+                }
+                ins.operands[0].kind = OPERAND_REGISTER;
+                ins.operands[0].reg = REG_AX;
+                
+                ins.operands[1].kind = OPERAND_IMMEDIATE;
+                ins.operands[1].immediate = inm_value;
+                
+                break;
+            }
+        return ins;
+    }
+}
+
+
+
+
 // // TODO 
-//}
-//
-//instruction_t decode_add(memory_t *mem){
-//
-//}
-//
 //instruction_t decode_sub(memory_t *mem){
 //
 //}
