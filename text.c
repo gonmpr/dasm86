@@ -98,8 +98,15 @@ void print_operand(operand_t op)
 }
 
 
-
 void print_instruction(instruction_t ins){
+    
+    if(ins.opcode.kind == OP_JNZ){
+      print_opcode(ins.opcode.kind);
+      printf(" ");
+      printf("%d", (s16)ins.operands[0].immediate);
+      printf("\n");
+      return;
+    }
 
     print_opcode(ins.opcode.kind);
     print_operand(ins.operands[0]);

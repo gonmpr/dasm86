@@ -165,7 +165,9 @@ void decode_modrm(memory_t *mem, instruction_t *ins, bool wide){
 
 
 
-
+//
+//    DECODING OF MOV, ADD, CMP, SUB IS PRACTICALLY THE; WILL NEED TO REFACTOR
+//
 
 
 instruction_t decode_mov(memory_t *mem, instruction_t ins){
@@ -251,10 +253,6 @@ instruction_t decode_add(memory_t *mem, instruction_t ins){
                 set_src_dst(&ins, d);
                 break;
             }
-        case 0b10000000:
-            {
-                break;
-            }
         case 0b00000100:
             {
                 bool w = byte1 & 1;
@@ -266,33 +264,157 @@ instruction_t decode_add(memory_t *mem, instruction_t ins){
                     ins.size = 3;
                 }
                 ins.operands[0].kind = OPERAND_REGISTER;
-                ins.operands[0].reg = REG_AX;
+                ins.operands[0].reg = w ? REG_AX : REG_AL;
                 
                 ins.operands[1].kind = OPERAND_IMMEDIATE;
                 ins.operands[1].immediate = inm_value;
                 
                 break;
             }
+      }
         return ins;
-    }
+  }
+
+
+
+
+
+instruction_t decode_sub(memory_t *mem, instruction_t ins){
+    u8 byte1 = mem->data[mem->offset];
+
+    switch(ins.opcode.pattern){
+        case 0b00101000:
+            {
+                bool w = (byte1 & 0b1) != 0;  
+                bool d = (byte1 & 0b10) != 0;
+
+                decode_modrm(mem, &ins, w);
+                set_src_dst(&ins, d);
+                break;
+            }
+        case 0b00101100:
+            {
+                bool w = byte1 & 1;
+                u16 inm_value = mem->data[mem->offset + 1];
+                ins.size = 2;
+                if(w){
+                    u8 hi_value = mem->data[mem->offset + 2];
+                    inm_value |= (hi_value<<8);
+                    ins.size = 3;
+                }
+                ins.operands[0].kind = OPERAND_REGISTER;
+                ins.operands[0].reg = w ? REG_AX : REG_AL;
+                
+                ins.operands[1].kind = OPERAND_IMMEDIATE;
+                ins.operands[1].immediate = inm_value;
+                
+                break;
+            }
+      }
+        return ins;
+
 }
 
 
 
 
-// // TODO 
-//instruction_t decode_sub(memory_t *mem){
-//
-//}
-//
-//instruction_t decode_cmp(memory_t *mem){
-//
-//}
-//
-//instruction_t decode_jnz(memory_t *mem){
-//
-//}
+instruction_t decode_cmp(memory_t *mem, instruction_t ins){
 
+    u8 byte1 = mem->data[mem->offset];
+
+    switch(ins.opcode.pattern){
+        case 0b00111000:
+            {
+                bool w = (byte1 & 0b1) != 0;  
+                bool d = (byte1 & 0b10) != 0;
+
+                decode_modrm(mem, &ins, w);
+                set_src_dst(&ins, d);
+                break;
+            }
+        case 0b00111100:
+            {
+                bool w = byte1 & 1;
+                u16 inm_value = mem->data[mem->offset + 1];
+                ins.size = 2;
+                if(w){
+                    u8 hi_value = mem->data[mem->offset + 2];
+                    inm_value |= (hi_value<<8);
+                    ins.size = 3;
+                }
+                ins.operands[0].kind = OPERAND_REGISTER;
+                ins.operands[0].reg = w ? REG_AX : REG_AL;
+                
+                ins.operands[1].kind = OPERAND_IMMEDIATE;
+                ins.operands[1].immediate = inm_value;
+                
+                break;
+            }
+      }
+        return ins;
+}
+
+
+
+instruction_t decode_jnz(memory_t *mem, instruction_t ins){
+
+    ins.size = 2;
+    ins.operands[0].kind = OPERAND_IMMEDIATE;
+    ins.operands[0].immediate = (s8)mem->data[mem->offset + 1];
+
+    return ins;
+}
+
+
+instruction_t decode_reg_op(memory_t *mem, instruction_t ins)
+{
+    u8 byte1 = mem->data[mem->offset];
+    u8 byte2 = mem->data[mem->offset + 1];
+
+    bool s = (byte1 & 0b10) != 0;
+    bool w = (byte1 & 0b01) != 0;
+
+    u8 reg = (byte2 >> 3) & 0b111;
+
+    decode_modrm(mem, &ins, w);
+
+    operand_t rm_operand = ins.operands[1];
+
+    switch(reg)
+    {
+        case 0: ins.opcode.kind = OP_ADD; break;
+        case 5: ins.opcode.kind = OP_SUB; break;
+        case 7: ins.opcode.kind = OP_CMP; break;
+    }
+
+    u16 imm_value;
+
+    if (!w) {
+        // imm8
+        imm_value = mem->data[mem->offset + ins.size];
+        ins.size += 1;
+    }
+    else if (s) {
+        // imm8 sign-extended
+        imm_value = mem->data[mem->offset + ins.size];
+        ins.size += 1;
+    }
+    else {
+        // imm16
+        u8 lo = mem->data[mem->offset + ins.size];
+        u8 hi = mem->data[mem->offset + ins.size + 1];
+
+        imm_value = lo | (hi << 8);
+        ins.size += 2;
+    }
+
+    ins.operands[0] = rm_operand;
+
+    ins.operands[1].kind = OPERAND_IMMEDIATE;
+    ins.operands[1].immediate = imm_value;
+
+    return ins;
+}
 
 
 
@@ -313,8 +435,7 @@ instruction_t decode_instruction(memory_t *mem){
 
         case OP_INM_RM:
         {
-          //here goes a function that takes the reg field, and return the
-          // op made, etc.
+          ins = decode_reg_op(mem, ins);
           break;
         }
         case OP_MOV:
@@ -325,21 +446,25 @@ instruction_t decode_instruction(memory_t *mem){
 
         case OP_ADD:
         {
+          ins = decode_add(mem, ins);
           break;
         }
 
         case OP_SUB:
         {
+          ins = decode_sub(mem, ins);
           break;
         }
 
         case OP_CMP:
         {
+          ins = decode_cmp(mem, ins);
           break;
         }
 
         case OP_JNZ:
         {
+          ins = decode_jnz(mem, ins);
           break;
         }
     }
