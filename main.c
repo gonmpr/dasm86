@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "memloader.h"
+#include "binloader.h"
 #include "dasm.h"
 #include "text.h"
 

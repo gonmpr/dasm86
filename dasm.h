@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <stdbool.h>
-#include "memloader.h"
+#include "binloader.h"
 
 //just renaming int types
 typedef uint8_t   u8;

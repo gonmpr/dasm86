@@ -1,4 +1,4 @@
-#include "memloader.h"
+#include "binloader.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -28,6 +28,7 @@ memory_t load_to_memory(FILE *fp, size_t file_size) {
 
   size_t bytes_read = fread(buffer, 1, file_size, fp);
   
+  
   loaded_file.data = buffer; 
   loaded_file.size = bytes_read;
   loaded_file.offset = 0;
@@ -39,6 +40,7 @@ memory_t load_file(char *filename){
   memory_t mem_file = {0};
   FILE *fp = fopen(filename, "rb");
   if (!fp){
+    printf("Error: File doesn't exist\n");
     return mem_file;
   } 
 
