@@ -115,3 +115,69 @@ void print_instruction(instruction_t ins){
     printf("\n");
 
 }
+
+
+
+
+void print_u16_binary(u16 value)
+{
+    for(int i = 15; i >= 0; --i)
+    {
+        printf("%u", (value >> i) & 1);
+
+        if(i == 8)
+            printf(" ");
+    }
+}
+
+void print_cpu(cpu_t *cpu)
+{
+    printf("\n=== CPU STATE ===\n");
+
+    printf("IP: ");
+    print_u16_binary(cpu->ip);
+    printf(" (%u)\n\n", cpu->ip);
+
+    printf("FLAGS\n");
+    printf("ZF=%u SF=%u CF=%u OF=%u\n\n",
+           cpu->flags.zf,
+           cpu->flags.sf,
+           cpu->flags.cf,
+           cpu->flags.of);
+
+    printf("REGISTERS\n");
+
+    printf("AX: ");
+    print_u16_binary(cpu->regs.ax);
+    printf(" (%u)\n", cpu->regs.ax);
+
+    printf("BX: ");
+    print_u16_binary(cpu->regs.bx);
+    printf(" (%u)\n", cpu->regs.bx);
+
+    printf("CX: ");
+    print_u16_binary(cpu->regs.cx);
+    printf(" (%u)\n", cpu->regs.cx);
+
+    printf("DX: ");
+    print_u16_binary(cpu->regs.dx);
+    printf(" (%u)\n", cpu->regs.dx);
+
+    printf("SP: ");
+    print_u16_binary(cpu->regs.sp);
+    printf(" (%u)\n", cpu->regs.sp);
+
+    printf("BP: ");
+    print_u16_binary(cpu->regs.bp);
+    printf(" (%u)\n", cpu->regs.bp);
+
+    printf("SI: ");
+    print_u16_binary(cpu->regs.si);
+    printf(" (%u)\n", cpu->regs.si);
+
+    printf("DI: ");
+    print_u16_binary(cpu->regs.di);
+    printf(" (%u)\n", cpu->regs.di);
+
+    printf("=================\n");
+}

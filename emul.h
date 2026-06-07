@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 #include <stdbool.h>
 #include "dasm.h"
@@ -15,6 +16,7 @@ typedef struct {
       u16 bp;
       u16 si;
       u16 di;
+
   } regs;
 
 
@@ -26,36 +28,13 @@ typedef struct {
   } flags;
 
 
+
   u16 ip;
+  size_t ins_not_exec_counter;
 
   u8 memory[65536]; // 64kb
 
 } cpu_t;
 
 
-/* 
-
-  *******************
-  functions to define
-  *******************
-
-get_reg8
-set_reg8
-
-get_reg16
-set_reg16
-
-effective_address
-
-get_operand_value
-set_operand_value
-
-execute_mov
-execute_add
-execute_sub
-execute_cmp
-execute_jnz
-
-execute_instruction
-
-*/
+bool execute_instruction(cpu_t *cpu, instruction_t ins);

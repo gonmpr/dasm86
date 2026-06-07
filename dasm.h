@@ -86,6 +86,7 @@ typedef struct {
 // for the operands of the instruction
 typedef struct {
   operand_kind_t kind;
+  bool wide;
 
   union {
       u16 immediate;
@@ -113,7 +114,7 @@ typedef struct {
   opcode_t opcode;
 
 
-  operand_t operands[2]; //first is src, second is dst
+  operand_t operands[2]; //first is dst, second is src 
 
   u8 size;
 

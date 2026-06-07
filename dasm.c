@@ -107,6 +107,9 @@ void decode_modrm(memory_t *mem, instruction_t *ins, bool wide){
   u8 reg = (byte2 >> 3) & 0b111;
   u8 rm  = byte2 & 0b111;
 
+  //saving wide for the emulator
+  ins->operands[0].wide = wide;
+  ins->operands[1].wide = wide;
 
   ins->operands[0].kind = OPERAND_REGISTER;
   ins->operands[0].reg = get_register(reg, wide);
@@ -220,9 +223,11 @@ instruction_t decode_mov(memory_t *mem, instruction_t ins){
       bool w = ((byte1>>3) & 0b1) & 1;  
 
       ins.operands[0].kind = OPERAND_REGISTER;
+      ins.operands[0].wide = w;
       ins.operands[0].reg = get_register(reg_bits, w);
 
       ins.operands[1].kind = OPERAND_IMMEDIATE;
+      ins.operands[1].wide = w;
         
       u16 inm_value = mem->data[mem->offset + 1];
       ins.size += 2;
