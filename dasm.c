@@ -269,9 +269,11 @@ instruction_t decode_add(memory_t *mem, instruction_t ins){
                     ins.size = 3;
                 }
                 ins.operands[0].kind = OPERAND_REGISTER;
+                ins.operands[0].wide = w;
                 ins.operands[0].reg = w ? REG_AX : REG_AL;
                 
                 ins.operands[1].kind = OPERAND_IMMEDIATE;
+                ins.operands[1].wide = w;
                 ins.operands[1].immediate = inm_value;
                 
                 break;
@@ -308,9 +310,11 @@ instruction_t decode_sub(memory_t *mem, instruction_t ins){
                     ins.size = 3;
                 }
                 ins.operands[0].kind = OPERAND_REGISTER;
+                ins.operands[0].wide = w;
                 ins.operands[0].reg = w ? REG_AX : REG_AL;
                 
                 ins.operands[1].kind = OPERAND_IMMEDIATE;
+                ins.operands[1].wide = w;
                 ins.operands[1].immediate = inm_value;
                 
                 break;
@@ -348,9 +352,11 @@ instruction_t decode_cmp(memory_t *mem, instruction_t ins){
                     ins.size = 3;
                 }
                 ins.operands[0].kind = OPERAND_REGISTER;
+                ins.operands[0].wide = w;
                 ins.operands[0].reg = w ? REG_AX : REG_AL;
                 
                 ins.operands[1].kind = OPERAND_IMMEDIATE;
+                ins.operands[1].wide = w;
                 ins.operands[1].immediate = inm_value;
                 
                 break;
@@ -416,6 +422,7 @@ instruction_t decode_reg_op(memory_t *mem, instruction_t ins)
     ins.operands[0] = rm_operand;
 
     ins.operands[1].kind = OPERAND_IMMEDIATE;
+    ins.operands[1].wide = w;
     ins.operands[1].immediate = imm_value;
 
     return ins;

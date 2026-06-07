@@ -343,6 +343,16 @@ void execute_mov(cpu_t *cpu, instruction_t ins){
 
 
 
+void execute_jnz(cpu_t *cpu, instruction_t ins)
+{
+  if(!(cpu->flags.zf))
+  {
+    s16 disp = (s16)(s8)ins.operands[0].immediate;
+    cpu->ip += ins.size + disp;
+  }
+}
+
+
 bool execute_instruction(cpu_t *cpu, instruction_t ins){
   switch(ins.opcode.kind){
     case OP_INVALID:
@@ -369,6 +379,10 @@ bool execute_instruction(cpu_t *cpu, instruction_t ins){
         return true;
       }
     case OP_JNZ:
+      {
+        execute_jnz(cpu, ins);
+        return true;
+      }
     case OP_INM_RM: // just for the compiler
     default:
       break; // TODO
