@@ -199,6 +199,32 @@ void set_operand_value(cpu_t *cpu, operand_t op, u16 value){
     }
 }
 
+void execute_sub(cpu_t *cpu, instruction_t ins){
+  u16 dst = get_operand_value(cpu, ins.operands[0]);
+  u16 src = get_operand_value(cpu, ins.operands[1]);
+
+  u16 result = dst - src;
+
+  set_operand_value(cpu, ins.operands[0], result);
+}
+
+void execute_add(cpu_t *cpu, instruction_t ins){
+  u16 dst = get_operand_value(cpu, ins.operands[0]);
+  u16 src = get_operand_value(cpu, ins.operands[1]);
+
+  u16 result = dst + src;
+
+  set_operand_value(cpu, ins.operands[0], result);
+}
+
+void execute_cmp(cpu_t *cpu, instruction_t ins){
+  u16 dst = get_operand_value(cpu, ins.operands[0]);
+  u16 src = get_operand_value(cpu, ins.operands[1]);
+
+  u16 result = dst - src;
+
+  (void)result;
+}
 
 
 void execute_mov(cpu_t *cpu, instruction_t ins){
@@ -219,10 +245,22 @@ bool execute_instruction(cpu_t *cpu, instruction_t ins){
       }
 
     case OP_ADD:
+      {
+        execute_add(cpu, ins);
+        return true;
+      }
     case OP_SUB:
+      {
+        execute_sub(cpu, ins);
+        return true;
+      }
     case OP_CMP:
-    case OP_INM_RM:
+      {
+        execute_cmp(cpu, ins);
+        return true;
+      }
     case OP_JNZ:
+    case OP_INM_RM: // just for the compiler
     default:
       break; // TODO
 
