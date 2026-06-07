@@ -199,23 +199,100 @@ void set_operand_value(cpu_t *cpu, operand_t op, u16 value){
     }
 }
 
-void execute_sub(cpu_t *cpu, instruction_t ins){
-  u16 dst = get_operand_value(cpu, ins.operands[0]);
-  u16 src = get_operand_value(cpu, ins.operands[1]);
-
-  u16 result = dst - src;
-
-  set_operand_value(cpu, ins.operands[0], result);
-}
 
 void execute_add(cpu_t *cpu, instruction_t ins){
   u16 dst = get_operand_value(cpu, ins.operands[0]);
   u16 src = get_operand_value(cpu, ins.operands[1]);
 
-  u16 result = dst + src;
+  u32 result = dst + src;
 
-  set_operand_value(cpu, ins.operands[0], result);
+  u16 stored = ins.operands[0].wide ?
+               (u16)result :
+               (u8)result;
+
+  cpu->flags.zf = (stored == 0);
+
+  cpu->flags.sf = ins.operands[0].wide ?
+                  ((stored & 0x8000) != 0) :
+                  ((stored & 0x80) != 0);
+
+  cpu->flags.cf = ins.operands[0].wide ?
+                  (result > 0xFFFF) :
+                  (result > 0xFF);
+
+
+  bool dst_sign;
+  bool src_sign;
+  bool res_sign;
+
+  if(ins.operands[0].wide){
+      dst_sign = (dst & 0x8000) != 0;
+      src_sign = (src & 0x8000) != 0;
+      res_sign = (stored & 0x8000) != 0;
+  }
+  else{
+      dst_sign = (dst & 0x80) != 0;
+      src_sign = (src & 0x80) != 0;
+      res_sign = (stored & 0x80) != 0;
+  }
+
+  cpu->flags.of =
+      (dst_sign == src_sign) &&
+      (res_sign != dst_sign);
+
+
+
+  set_operand_value(cpu, ins.operands[0], (u16)result);
 }
+
+
+
+
+void execute_sub(cpu_t *cpu, instruction_t ins){
+  u16 dst = get_operand_value(cpu, ins.operands[0]);
+  u16 src = get_operand_value(cpu, ins.operands[1]);
+
+  u32 result = dst - src;
+
+  u16 stored = ins.operands[0].wide ?
+               (u16)result :
+               (u8)result;
+
+  cpu->flags.zf = (stored == 0);
+
+  cpu->flags.sf = ins.operands[0].wide ?
+                  ((stored & 0x8000) != 0) :
+                  ((stored & 0x80) != 0);
+
+  cpu->flags.cf = dst < src;
+
+
+  bool dst_sign;
+  bool src_sign;
+  bool res_sign;
+
+  if(ins.operands[0].wide){
+      dst_sign = (dst & 0x8000) != 0;
+      src_sign = (src & 0x8000) != 0;
+      res_sign = (stored & 0x8000) != 0;
+  }
+  else{
+      dst_sign = (dst & 0x80) != 0;
+      src_sign = (src & 0x80) != 0;
+      res_sign = (stored & 0x80) != 0;
+  }
+
+  cpu->flags.of =
+      (dst_sign != src_sign) &&
+      (res_sign != dst_sign);
+
+  set_operand_value(cpu, ins.operands[0], (u16)result);
+}
+
+
+
+
+
 
 void execute_cmp(cpu_t *cpu, instruction_t ins){
   u16 dst = get_operand_value(cpu, ins.operands[0]);
@@ -223,7 +300,39 @@ void execute_cmp(cpu_t *cpu, instruction_t ins){
 
   u16 result = dst - src;
 
-  (void)result;
+  u16 stored = ins.operands[0].wide ?
+               (u16)result :
+               (u8)result;
+
+  cpu->flags.zf = (stored == 0);
+
+  cpu->flags.sf = ins.operands[0].wide ?
+                  ((stored & 0x8000) != 0) :
+                  ((stored & 0x80) != 0);
+
+  cpu->flags.cf = dst < src;
+
+
+  bool dst_sign;
+  bool src_sign;
+  bool res_sign;
+
+  if(ins.operands[0].wide){
+      dst_sign = (dst & 0x8000) != 0;
+      src_sign = (src & 0x8000) != 0;
+      res_sign = (stored & 0x8000) != 0;
+  }
+  else{
+      dst_sign = (dst & 0x80) != 0;
+      src_sign = (src & 0x80) != 0;
+      res_sign = (stored & 0x80) != 0;
+  }
+
+
+  cpu->flags.of =
+      (dst_sign != src_sign) &&
+      (res_sign != dst_sign);
+
 }
 
 
@@ -265,7 +374,7 @@ bool execute_instruction(cpu_t *cpu, instruction_t ins){
       break; // TODO
 
   }
-    cpu->ins_not_exec_counter++;
+
     return true;
 
 }

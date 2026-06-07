@@ -43,6 +43,7 @@ int main(int argc, char *argv[]){
           return 1;
       }
       cpu.ip += instruction.size;
+      print_cpu(&cpu);
     }
     
 

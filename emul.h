@@ -30,7 +30,6 @@ typedef struct {
 
 
   u16 ip;
-  size_t ins_not_exec_counter;
 
   u8 memory[65536]; // 64kb
 
