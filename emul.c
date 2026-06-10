@@ -2,20 +2,6 @@
 #include <stdio.h>
 #include  "emul.h"
 
-/* 
-
-  *******************
-  functions to define
-  *******************
-
-execute_add
-execute_sub
-execute_cmp
-execute_jnz
-
-
-*/
-
 
 u8 get_reg8(cpu_t *cpu, reg_t reg){
 
@@ -123,7 +109,7 @@ void set_reg16(cpu_t *cpu, reg_t reg, u16 value){
 
 
 u16 effective_address(cpu_t *cpu, operand_t op){
-  //just in case, im stupid
+
   assert(op.kind == OPERAND_ADDRESS); 
 
   u16 address = op.mem.displacement;
@@ -401,11 +387,11 @@ bool execute_instruction(cpu_t *cpu, instruction_t ins){
       }
     case OP_INM_RM: // just for the compiler
     default:
-      break; // TODO
+      break;
 
   }
 
-    return true;
+    return false;
 
 }
 
