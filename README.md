@@ -37,13 +37,17 @@ mov al, bl
 ```
 Register ↔ Memory
 ```asm
-mov ax, 1234
-mov al, 255
+mov ax, [bp]
+mov [bp+si+100], bx
 ```
 Immediate → Memory
 ```asm
 mov [bx], 7
 mov [bp+si+5], 4660
+```
+Immediate → Register
+```asm
+mov bx, 7
 ```
 
 ### ADD | SUB
