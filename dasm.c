@@ -47,7 +47,6 @@ const memory_operand_t eff_addr_table[] = {
   {.base = REG_DI, .index = REG_INVALID, .displacement = 0},
   {.base = REG_BP, .index = REG_INVALID, .displacement = 0},
   {.base = REG_BX, .index = REG_INVALID, .displacement = 0},
-
 };
 
 // get the register
@@ -99,7 +98,7 @@ opcode_t get_opcode(unsigned char byte){
 
 
 //decodes the mod reg rm structure and the displacement
-// setups the operands
+// and build the operands
 void decode_modrm(memory_t *mem, instruction_t *ins, bool wide){
 
   u8 byte2 = mem->data[mem->offset + 1];
@@ -117,7 +116,7 @@ void decode_modrm(memory_t *mem, instruction_t *ins, bool wide){
 
   ins->size+=2;
 
-  //caso especial de mierda, hay displacement donde dice que no hay
+  //special case, there is a displacement
   if(mod == MEM0_MOD && rm == 6){
     ins->operands[1].kind = OPERAND_ADDRESS;
     ins->operands[1].mem.base = REG_INVALID;
@@ -164,14 +163,6 @@ void decode_modrm(memory_t *mem, instruction_t *ins, bool wide){
 }
 
 
-
-
-
-
-
-//
-//    DECODING OF MOV, ADD, CMP, SUB IS PRACTICALLY THE; WILL NEED TO REFACTOR
-//
 
 
 instruction_t decode_mov(memory_t *mem, instruction_t ins){
