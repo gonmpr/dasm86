@@ -1,7 +1,8 @@
 #pragma once
+
 #include <stdint.h>
 #include <stdbool.h>
-#include "binloader.h"
+#include <stddef.h>
 
 //just renaming int types
 typedef uint8_t   u8;
@@ -121,5 +122,5 @@ typedef struct {
 } instruction_t;
 
 
-
+typedef struct memory_t memory_t;
 instruction_t decode_instruction(memory_t *mem);

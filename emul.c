@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdio.h>
 #include  "emul.h"
 
 /* 
@@ -350,6 +351,21 @@ void execute_jnz(cpu_t *cpu, instruction_t ins)
     s16 disp = (s16)(s8)ins.operands[0].immediate;
     cpu->ip += ins.size + disp;
   }
+}
+
+
+bool write_memfile(cpu_t cpu){
+  FILE *fp = fopen("mem.dasm", "wb");
+
+  if(!fp) {
+    printf("Error: couldn't create mem.dasm\n");
+    return false;
+  }
+
+  fwrite(cpu.memory, 1, sizeof(cpu.memory), fp);
+  fclose(fp);
+
+  return true;
 }
 
 

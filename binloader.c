@@ -39,14 +39,16 @@ memory_t load_to_memory(FILE *fp, size_t file_size) {
 memory_t load_file(char *filename){
   memory_t mem_file = {0};
   FILE *fp = fopen(filename, "rb");
+
   if (!fp){
     printf("Error: File doesn't exist\n");
     return mem_file;
-  } 
+  }
 
   size_t file_size = get_file_size(fp);
   mem_file = load_to_memory(fp, file_size);
   fclose(fp);
+
   return mem_file;
 }
 

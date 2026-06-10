@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-typedef struct {
+typedef struct memory_t {
   unsigned char *data;
   size_t size;
   size_t offset;

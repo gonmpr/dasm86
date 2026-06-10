@@ -1,4 +1,5 @@
 #include "dasm.h"
+#include "binloader.h"
 
 
 const reg_t reg_table[2][8] = {

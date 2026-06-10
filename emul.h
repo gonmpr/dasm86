@@ -1,6 +1,8 @@
 #pragma once
+
 #include <stdint.h>
 #include <stdbool.h>
+
 #include "dasm.h"
 
 
@@ -37,3 +39,4 @@ typedef struct {
 
 
 bool execute_instruction(cpu_t *cpu, instruction_t ins);
+bool write_memfile(cpu_t cpu);
