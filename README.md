@@ -131,6 +131,8 @@ jnz y_loop
 
 After running the assembled binary with the emulator and dumping the emulated memory with ```-write```,
 the resulting file can be opened as a raw RGBA image in GIMP, producing:
-<img width="64" height="64" alt="img64" src="https://github.com/user-attachments/assets/b4707120-4fbd-460f-811f-2d1aa3ad4ac1" />
+
+
+<img width="512" style="image-rendering: pixelated;" alt="img64" src="https://github.com/user-attachments/assets/b4707120-4fbd-460f-811f-2d1aa3ad4ac1" />
 
 
