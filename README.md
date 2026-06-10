@@ -82,14 +82,17 @@ Just use
 make
 ```
 ## Usage
+
 Disassemble a binary
-```
-./dasm86 <binfile>
 ```bash
+./dasm86 <binfile>
+```
+
 Run a binary
 ```bash
 ./dasm86 -run <binfile>
 ```
+
 dump emulator memory to a file
 ```bash
 ./dasm86 -run -write <binfile>
